@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] LayerMask _groundMask;
 
     [SerializeField] bool _isGrounded;
+    [SerializeField] Transform respawnpoint;
     void Awake()
     {
         _controller = GetComponent<CharacterController>();
@@ -38,6 +39,16 @@ public class PlayerController : MonoBehaviour
         _inputs.Player.Move.performed += context => _move = context.ReadValue<Vector2>();
         _inputs.Player.Move.canceled += context => _move = Vector2.zero;
         _inputs.Player.Jump.performed += context => Jump();
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Death"))
+        {
+            _controller.enabled = false;
+            gameObject.transform.position = respawnpoint.transform.position;
+            _controller.enabled = true;
+
+        }
     }
 
     private void FixedUpdate()
@@ -68,5 +79,6 @@ public class PlayerController : MonoBehaviour
     private void SendMessage(InputAction.CallbackContext context)
     {
         Debug.Log($"Move performed: x = {context.ReadValue<Vector2>().x}, y = {context.ReadValue<Vector2>().y}");
+        
     }
 }
